@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, FileText, RotateCcw } from "lucide-react";
+import { Download, FileText, Maximize2, Minimize2, RotateCcw } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/toaster";
@@ -54,6 +54,7 @@ function hello() {
 export default function MarkdownEditor() {
   const [markdown, setMarkdown] = useState<string>("");
   const [isClient, setIsClient] = useState(false);
+  const [isPreviewFullscreen, setIsPreviewFullscreen] = useState(false);
 
   const { toast } = useToast();
 
@@ -140,11 +141,11 @@ export default function MarkdownEditor() {
       <header className="border-b p-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           {useTheme().resolvedTheme === "dark" ? (
-            <Link href="https://orrisslabs.com" target="_blank">
+            <Link href="https://ldo.dev" target="_blank">
               <Image src="/orriss-labs/O_White.svg" alt="Orriss Labs" width={30} height={30} />
             </Link>
           ) : (
-            <Link href="https://orrisslabs.com" target="_blank">
+            <Link href="https://ldo.dev" target="_blank">
               <Image src="/orriss-labs/O.svg" alt="Orriss Labs" width={30} height={30} />
             </Link>
           )}
@@ -168,16 +169,24 @@ export default function MarkdownEditor() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-1/2 border-r p-4 overflow-auto">
-          <textarea
-            className="w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-background"
-            value={markdown}
-            onChange={(e) => setMarkdown(e.target.value)}
-            placeholder="Type your markdown here..."
-          />
-        </div>
+        {!isPreviewFullscreen && (
+          <div className="w-1/2 border-r p-4 overflow-auto">
+            <textarea
+              className="w-full h-full p-4 font-mono text-sm resize-none focus:outline-none bg-background"
+              value={markdown}
+              onChange={(e) => setMarkdown(e.target.value)}
+              placeholder="Type your markdown here..."
+            />
+          </div>
+        )}
 
-        <div className="w-1/2 p-4 overflow-auto" id="markdown-preview">
+        <div className={`${isPreviewFullscreen ? "w-full" : "w-1/2"} p-4 overflow-auto`} id="markdown-preview">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-medium text-muted-foreground">Preview</h2>
+            <Button variant="outline" size="icon" onClick={() => setIsPreviewFullscreen((prev) => !prev)} aria-label={isPreviewFullscreen ? "Exit fullscreen preview" : "Enter fullscreen preview"}>
+              {isPreviewFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+            </Button>
+          </div>
           <div className="prose prose-sm md:prose-base lg:prose-lg dark:prose-invert max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>{markdown}</ReactMarkdown>
           </div>
